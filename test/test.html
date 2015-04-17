@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html ng-app="app">
+	<head>
+		<script type="text/javascript" src="index.js"></script>
+	</head>
+	<body>
+		<ul ng-controller="ListCtrl">
+			<li ng-repeat="model in collection.models">{{model}}</li>
+			<div infinite-scroll="controller.loadMore()"></div>
+		</ul>
+	</body>
+</html>
