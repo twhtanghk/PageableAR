@@ -15,7 +15,7 @@ Model, Collection, and Pageable Collection for Angular Active Record
 ```
 
 ## Usage
-Follow the prototype of Model, Collection, and PageableCollection defined in bacbkonejs
+Follow the prototype of Model, Collection, and PageableCollection defined in [backbonejs](http://backbonejs.org/)
 ```
   $scope.collection = new pageableAR.Collection (i for i in [1..100]) 
   $scope.controller = new ListView collection: $scope.collection
