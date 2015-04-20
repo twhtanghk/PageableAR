@@ -1,11 +1,13 @@
-var config, model,
+var _, config, model,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 require('angular-activerecord');
 
+_ = require('underscore');
+
 model = function(ActiveRecord) {
-  var Collection, Model, PageableCollection;
+  var Collection, Model, PageableCollection, View;
   Model = (function(superClass) {
     extend(Model, superClass);
 
@@ -190,10 +192,27 @@ model = function(ActiveRecord) {
     return PageableCollection;
 
   })(Collection);
+  View = (function() {
+    function View(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      _.extend(this, _.pick(opts, 'model', 'collection', 'el', 'id', 'className', 'tagName', 'events'));
+      _.each(this.events, (function(_this) {
+        return function(handler, event) {
+          return $scope.$on(event, _this[handler]);
+        };
+      })(this));
+    }
+
+    return View;
+
+  })();
   return {
     Model: Model,
     Collection: Collection,
-    PageableCollection: PageableCollection
+    PageableCollection: PageableCollection,
+    View: View
   };
 };
 

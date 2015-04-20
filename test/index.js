@@ -3,8 +3,6 @@ var ListCtrl, config;
 
 require("./../bower_components/angular/angular.js");
 
-window._ = require("./../bower_components/underscore/underscore.js");
-
 require('../model.coffee');
 
 require("./../bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js");
@@ -52,7 +50,7 @@ angular.module('app').controller('ListCtrl', ['$scope', 'pageableAR', ListCtrl])
 
 
 
-},{"../model.coffee":6,"./../bower_components/angular/angular.js":3,"./../bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js":4,"./../bower_components/underscore/underscore.js":5}],2:[function(require,module,exports){
+},{"../model.coffee":6,"./../bower_components/angular/angular.js":3,"./../bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js":4}],2:[function(require,module,exports){
 /*!
  * @licence ActiveRecord for AngularJS
  * (c) 2013-2014 Bob Fanger, Jeremy Ashkenas, DocumentCloud
@@ -28496,14 +28494,16 @@ mod.directive('infiniteScroll', [
 }.call(this));
 
 },{}],6:[function(require,module,exports){
-var config, model,
+var _, config, model,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 require("./bower_components/angular-activerecord/src/angular-activerecord.js");
 
+_ = require("./bower_components/underscore/underscore.js");
+
 model = function(ActiveRecord) {
-  var Collection, Model, PageableCollection;
+  var Collection, Model, PageableCollection, View;
   Model = (function(superClass) {
     extend(Model, superClass);
 
@@ -28688,10 +28688,27 @@ model = function(ActiveRecord) {
     return PageableCollection;
 
   })(Collection);
+  View = (function() {
+    function View(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      _.extend(this, _.pick(opts, 'model', 'collection', 'el', 'id', 'className', 'tagName', 'events'));
+      _.each(this.events, (function(_this) {
+        return function(handler, event) {
+          return $scope.$on(event, _this[handler]);
+        };
+      })(this));
+    }
+
+    return View;
+
+  })();
   return {
     Model: Model,
     Collection: Collection,
-    PageableCollection: PageableCollection
+    PageableCollection: PageableCollection,
+    View: View
   };
 };
 
@@ -28703,4 +28720,4 @@ angular.module('PageableAR').factory('pageableAR', ['ActiveRecord', model]);
 
 
 
-},{"./bower_components/angular-activerecord/src/angular-activerecord.js":2}]},{},[1]);
+},{"./bower_components/angular-activerecord/src/angular-activerecord.js":2,"./bower_components/underscore/underscore.js":5}]},{},[1]);

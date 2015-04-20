@@ -1,4 +1,5 @@
 require 'angular-activerecord'
+_ = require 'underscore'
 
 model = (ActiveRecord) ->
 	
@@ -97,9 +98,17 @@ model = (ActiveRecord) ->
 							reject 'Not a valid response type'
 					.catch reject
 
+	class View
+		constructor: (opts = {}) ->
+			_.extend @, _.pick(opts, 'model', 'collection', 'el', 'id', 'className', 'tagName', 'events')
+			
+			_.each @events, (handler, event) =>
+				$scope.$on event, @[handler]
+				
 	Model:				Model
 	Collection:			Collection
 	PageableCollection:	PageableCollection
+	View:				View
 				
 config = ->
 	return
