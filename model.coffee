@@ -7,6 +7,11 @@ model = (ActiveRecord) ->
 		constructor: (attrs = {}, opts = {}) ->
 			@$initialize(attrs, opts)
 			
+		# return if changed or any attributes is object type
+		$hasChanged: ->
+			super() or _.some @$previousAttributes(), (attr) ->
+				_.isObject attr
+			
 		$changedAttributes: (diff) ->
 			_.omit super(diff), '$$hashKey' 
 		
@@ -30,6 +35,11 @@ model = (ActiveRecord) ->
 				if not @contains item 
 					@models.push item
 					@length++
+				else
+					# merge input item into existing model
+					model = _.find @models, (model) =>
+						model[@idAttribute] == item[@idAttribute]
+					_.extend model, _.omit(item, '$$hashKey')
 				
 		remove: (models, opts = {}) ->
 			singular = not _.isArray(models)

@@ -28517,6 +28517,12 @@ model = function(ActiveRecord) {
       this.$initialize(attrs, opts);
     }
 
+    Model.prototype.$hasChanged = function() {
+      return Model.__super__.$hasChanged.call(this) || _.some(this.$previousAttributes(), function(attr) {
+        return _.isObject(attr);
+      });
+    };
+
     Model.prototype.$changedAttributes = function(diff) {
       return _.omit(Model.__super__.$changedAttributes.call(this, diff), '$$hashKey');
     };
@@ -28560,6 +28566,11 @@ model = function(ActiveRecord) {
           if (!_this.contains(item)) {
             _this.models.push(item);
             return _this.length++;
+          } else {
+            model = _.find(_this.models, function(model) {
+              return model[_this.idAttribute] === item[_this.idAttribute];
+            });
+            return _.extend(model, _.omit(item, '$$hashKey'));
           }
         };
       })(this));
