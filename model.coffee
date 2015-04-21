@@ -57,6 +57,8 @@ model = (ActiveRecord) ->
 					.then (res) =>
 						data = @$parse(res.data, opts)
 						if _.isArray data
+							data = _.map data, (value) =>
+								new @model value
 							@add data
 							fulfill @
 						else
@@ -87,6 +89,8 @@ model = (ActiveRecord) ->
 					.then (res) =>
 						data = @$parse(res.data, opts)
 						if data.count? and data.results?
+							data.results = _.map data.results, (value) =>
+								new @model value
 							@add data.results
 							@state = _.extend @state,
 								count:		data.count

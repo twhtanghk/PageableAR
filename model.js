@@ -120,6 +120,9 @@ model = function(ActiveRecord) {
             var data;
             data = _this.$parse(res.data, opts);
             if (_.isArray(data)) {
+              data = _.map(data, function(value) {
+                return new _this.model(value);
+              });
               _this.add(data);
               return fulfill(_this);
             } else {
@@ -173,6 +176,9 @@ model = function(ActiveRecord) {
             var data;
             data = _this.$parse(res.data, opts);
             if ((data.count != null) && (data.results != null)) {
+              data.results = _.map(data.results, function(value) {
+                return new _this.model(value);
+              });
               _this.add(data.results);
               _this.state = _.extend(_this.state, {
                 count: data.count,
