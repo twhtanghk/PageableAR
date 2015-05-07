@@ -1,4 +1,4 @@
-var _, config, model,
+var _, model,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -7,7 +7,7 @@ require('angular-activerecord');
 _ = require('underscore');
 
 model = function(ActiveRecord) {
-  var Collection, Model, PageableCollection, View;
+  var Collection, Model, PageableCollection;
   Model = (function(superClass) {
     extend(Model, superClass);
 
@@ -16,7 +16,9 @@ model = function(ActiveRecord) {
         attrs = {};
       }
       if (opts == null) {
-        opts = {};
+        opts = {
+          parse: true
+        };
       }
       this.$initialize(attrs, opts);
     }
@@ -32,7 +34,7 @@ model = function(ActiveRecord) {
     };
 
     Model.prototype.$save = function(values, opts) {
-      if (this.$hasChanged()) {
+      if (this.$isNew() || this.$hasChanged()) {
         return Model.__super__.$save.call(this, values, opts);
       } else {
         return new Promise(function(fulfill, reject) {
@@ -121,9 +123,20 @@ model = function(ActiveRecord) {
       return ret != null;
     };
 
+    Collection.prototype.reset = function() {
+      this.length = 0;
+      this.models = [];
+      return this.$initialize({}, {
+        reset: true
+      });
+    };
+
     Collection.prototype.$fetch = function(opts) {
       if (opts == null) {
         opts = {};
+      }
+      if (opts.reset) {
+        this.reset();
       }
       return new Promise((function(_this) {
         return function(fulfill, reject) {
@@ -150,21 +163,20 @@ model = function(ActiveRecord) {
   PageableCollection = (function(superClass) {
     extend(PageableCollection, superClass);
 
-    function PageableCollection(models, opts) {
-      if (models == null) {
-        models = [];
-      }
-      if (opts == null) {
-        opts = {};
-      }
-      this.state = {
-        count: 0,
-        page: 0,
-        per_page: 10,
-        total_page: 0
-      };
-      PageableCollection.__super__.constructor.call(this, models, opts);
+    function PageableCollection() {
+      return PageableCollection.__super__.constructor.apply(this, arguments);
     }
+
+    PageableCollection.prototype.$defaults = function() {
+      return {
+        state: {
+          count: 0,
+          page: 0,
+          per_page: 10,
+          total_page: 0
+        }
+      };
+    };
 
 
     /*
@@ -177,6 +189,9 @@ model = function(ActiveRecord) {
     PageableCollection.prototype.$fetch = function(opts) {
       if (opts == null) {
         opts = {};
+      }
+      if (opts.reset) {
+        this.reset();
       }
       opts.params = opts.params || {};
       opts.params.page = this.state.page + 1;
@@ -209,32 +224,11 @@ model = function(ActiveRecord) {
     return PageableCollection;
 
   })(Collection);
-  View = (function() {
-    function View(opts) {
-      if (opts == null) {
-        opts = {};
-      }
-      _.extend(this, _.pick(opts, 'model', 'collection', 'el', 'id', 'className', 'tagName', 'events'));
-      _.each(this.events, (function(_this) {
-        return function(handler, event) {
-          return $scope.$on(event, _this[handler]);
-        };
-      })(this));
-    }
-
-    return View;
-
-  })();
   return {
     Model: Model,
     Collection: Collection,
-    PageableCollection: PageableCollection,
-    View: View
+    PageableCollection: PageableCollection
   };
 };
 
-config = function() {};
-
-angular.module('PageableAR', ['ActiveRecord']).config([config]);
-
-angular.module('PageableAR').factory('pageableAR', ['ActiveRecord', model]);
+angular.module('PageableAR', ['ActiveRecord']).factory('pageableAR', ['ActiveRecord', model]);
