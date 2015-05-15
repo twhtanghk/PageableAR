@@ -86,22 +86,22 @@ model = (ActiveRecord) ->
 		$defaults: ->
 			state:
 				count:		0
-				page:		0
-				per_page:	10
+				skip:		0
+				limit:		10
 				total_page:	0
 		
 		###
 		opts:
 			params:
-				page:		page no to be fetched (first page = 1)
-				per_page:	no of records per page
+				skip:		skip the fetch of first nth records (default = 0)
+				limit:		no of records per page
 		###
 		$fetch: (opts = {}) ->
 			if opts.reset
 				@reset()
 			opts.params = opts.params || {}
-			opts.params.page = @state.page + 1
-			opts.params.per_page = opts.params.per_page || @state.per_page
+			opts.params.skip = @state.skip
+			opts.params.limit = opts.params.limit || @state.limit
 			return new Promise (fulfill, reject) =>
 				@$sync('read', @, opts)
 					.then (res) =>
@@ -112,9 +112,9 @@ model = (ActiveRecord) ->
 							@add data.results
 							@state = _.extend @state,
 								count:		data.count
-								page:		opts.params.page
-								per_page:	opts.params.per_page
-								total_page:	Math.ceil(data.count / opts.params.per_page)
+								skip:		opts.params.skip + data.results.length
+								limit:		opts.params.limit
+								total_page:	Math.ceil(data.count / opts.params.limit)
 							fulfill @
 						else
 							reject 'Not a valid response type'

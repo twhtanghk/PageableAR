@@ -171,8 +171,8 @@ model = function(ActiveRecord) {
       return {
         state: {
           count: 0,
-          page: 0,
-          per_page: 10,
+          skip: 0,
+          limit: 10,
           total_page: 0
         }
       };
@@ -182,8 +182,8 @@ model = function(ActiveRecord) {
     /*
     		opts:
     			params:
-    				page:		page no to be fetched (first page = 1)
-    				per_page:	no of records per page
+    				skip:		skip the fetch of first nth records (default = 0)
+    				limit:		no of records per page
      */
 
     PageableCollection.prototype.$fetch = function(opts) {
@@ -194,8 +194,8 @@ model = function(ActiveRecord) {
         this.reset();
       }
       opts.params = opts.params || {};
-      opts.params.page = this.state.page + 1;
-      opts.params.per_page = opts.params.per_page || this.state.per_page;
+      opts.params.skip = this.state.skip;
+      opts.params.limit = opts.params.limit || this.state.limit;
       return new Promise((function(_this) {
         return function(fulfill, reject) {
           return _this.$sync('read', _this, opts).then(function(res) {
@@ -208,9 +208,9 @@ model = function(ActiveRecord) {
               _this.add(data.results);
               _this.state = _.extend(_this.state, {
                 count: data.count,
-                page: opts.params.page,
-                per_page: opts.params.per_page,
-                total_page: Math.ceil(data.count / opts.params.per_page)
+                skip: opts.params.skip + data.results.length,
+                limit: opts.params.limit,
+                total_page: Math.ceil(data.count / opts.params.limit)
               });
               return fulfill(_this);
             } else {
