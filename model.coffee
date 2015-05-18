@@ -1,8 +1,23 @@
 require 'angular-activerecord'
+require 'angularSails'
 _ = require 'underscore'
 
-model = (ActiveRecord) ->
+model = (ActiveRecord, $sailsSocket, server) ->
+	ActiveRecord.restsync = ActiveRecord.sync
 	
+	ActiveRecord.iosync = (operation, model, opts = {}) ->
+		crudMapping =
+			create:		'POST'
+			read:		'GET'
+			update:		'PUT'
+			'delete':	'DELETE'
+		opts.method = crudMapping[operation]
+		opts.url = _.result model, '$url'
+		$sailsSocket opts
+			
+	if server.type == 'io'
+		ActiveRecord.sync = ActiveRecord.iosync
+		
 	class Model extends ActiveRecord
 		constructor: (attrs = {}, opts = {parse: true}) ->
 			@$initialize(attrs, opts)
@@ -123,6 +138,8 @@ model = (ActiveRecord) ->
 	Model:				Model
 	Collection:			Collection
 	PageableCollection:	PageableCollection
-				
-angular.module('PageableAR', ['ActiveRecord'])
-	.factory 'pageableAR', ['ActiveRecord', model]
+
+angular.module('PageableAR', ['ActiveRecord', 'angularSails.io'])
+	.value 'server', 
+		type: 'rest'
+	.factory 'pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]

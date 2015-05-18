@@ -4,10 +4,31 @@ var _, model,
 
 require('angular-activerecord');
 
+require('angularSails');
+
 _ = require('underscore');
 
-model = function(ActiveRecord) {
+model = function(ActiveRecord, $sailsSocket, server) {
   var Collection, Model, PageableCollection;
+  ActiveRecord.restsync = ActiveRecord.sync;
+  ActiveRecord.iosync = function(operation, model, opts) {
+    var crudMapping;
+    if (opts == null) {
+      opts = {};
+    }
+    crudMapping = {
+      create: 'POST',
+      read: 'GET',
+      update: 'PUT',
+      'delete': 'DELETE'
+    };
+    opts.method = crudMapping[operation];
+    opts.url = _.result(model, '$url');
+    return $sailsSocket(opts);
+  };
+  if (server.type === 'io') {
+    ActiveRecord.sync = ActiveRecord.iosync;
+  }
   Model = (function(superClass) {
     extend(Model, superClass);
 
@@ -231,4 +252,6 @@ model = function(ActiveRecord) {
   };
 };
 
-angular.module('PageableAR', ['ActiveRecord']).factory('pageableAR', ['ActiveRecord', model]);
+angular.module('PageableAR', ['ActiveRecord', 'angularSails.io']).value('server', {
+  type: 'rest'
+}).factory('pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]);

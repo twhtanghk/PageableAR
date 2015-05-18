@@ -25,3 +25,10 @@ Follow the prototype of Model, Collection, and PageableCollection defined in [ba
 	<div infinite-scroll="controller.loadMore()"></div>
   </ul>
 ```
+
+To interface with socket.io (sails) server, simply define the configuration variable 'serverType' as 'io'. The default serverType 'rest' is to interface with rest server
+```
+angular.module 'app', ['PageableAR']
+	.value 'server', 
+		type: 'io'
+```

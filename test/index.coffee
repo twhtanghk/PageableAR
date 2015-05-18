@@ -15,9 +15,6 @@ ListCtrl = ($scope, pageableAR) ->
 		
 	$scope.collection = new pageableAR.PageableCollection (i for i in [1..100])
 	$scope.controller = new ListView collection: $scope.collection
-	
-config = ->
-	return
 
-angular.module('app', ['PageableAR', 'infinite-scroll']).config [config]
-angular.module('app').controller 'ListCtrl', ['$scope', 'pageableAR', ListCtrl]
+angular.module('app', ['PageableAR', 'infinite-scroll'])
+	.controller 'ListCtrl', ['$scope', 'pageableAR', ListCtrl]
