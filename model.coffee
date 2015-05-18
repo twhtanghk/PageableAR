@@ -139,7 +139,7 @@ model = (ActiveRecord, $sailsSocket, server) ->
 	Collection:			Collection
 	PageableCollection:	PageableCollection
 
-angular.module('PageableAR', ['ActiveRecord', 'angularSails.io'])
+angular.module('PageableAR', ['ActiveRecord', 'sails.io'])
 	.value 'server', 
 		type: 'rest'
 	.factory 'pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]

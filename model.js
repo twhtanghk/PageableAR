@@ -252,6 +252,6 @@ model = function(ActiveRecord, $sailsSocket, server) {
   };
 };
 
-angular.module('PageableAR', ['ActiveRecord', 'angularSails.io']).value('server', {
+angular.module('PageableAR', ['ActiveRecord', 'sails.io']).value('server', {
   type: 'rest'
 }).factory('pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]);
