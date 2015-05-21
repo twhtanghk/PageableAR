@@ -30346,7 +30346,7 @@ model = function(ActiveRecord, $sailsSocket, server) {
             return _this.length++;
           } else {
             model = _.find(_this.models, function(model) {
-              return model[_this.idAttribute] === item[_this.idAttribute];
+              return model[_this.$idAttribute] === item[_this.$idAttribute];
             });
             return _.extend(model, _.omit(item, '$$hashKey'));
           }
