@@ -53,7 +53,7 @@ model = (ActiveRecord, $sailsSocket, server) ->
 				else
 					# merge input item into existing model
 					model = _.find @models, (model) =>
-						model[@idAttribute] == item[@idAttribute]
+						model[@$idAttribute] == item[@$idAttribute]
 					_.extend model, _.omit(item, '$$hashKey')
 				
 		remove: (models, opts = {}) ->
