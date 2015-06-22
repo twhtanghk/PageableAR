@@ -31,10 +31,10 @@ model = (ActiveRecord, $sailsSocket, server) ->
 			_.omit super(diff), '$$hashKey' 
 		
 		$save: (values, opts) ->
-			if @$isNew() or @$hasChanged()
+			if @$isNew() or @$hasChanged() or values
 				super(values, opts)
 			else
-				return new Promise (fulfill, reject) ->
+				return new Promise (fulfill, reject) =>
 					fulfill @
 			
 	class Collection extends Model

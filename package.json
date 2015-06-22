@@ -1,6 +1,6 @@
 {
   "name": "PageableAR",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model, Collection, and Pageable Collection for Angular Active Record",
   "main": "model.js",
   "scripts": {
