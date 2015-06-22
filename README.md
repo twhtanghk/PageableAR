@@ -3,12 +3,18 @@ Model, Collection, and Pageable Collection for Angular Active Record
 
 ## Installation
 ```
+bower install PageableAR
+```
+
+## Demo
+Compile and start http server
+```
   npm install && bower install
   node_modules/.bin/gulp
   node_modules/.bin/http-server
 ```
 
-## Demo
+Browse the testing page
 ```
   open browser to visit http://localhost:8080/test/test.html
   scroll down to reach the page bottom and trigger next page loading
