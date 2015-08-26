@@ -3,21 +3,6 @@ require 'angularSails'
 _ = require 'underscore'
 
 model = (ActiveRecord, $sailsSocket, server) ->
-	ActiveRecord.restsync = ActiveRecord.sync
-	
-	ActiveRecord.iosync = (operation, model, opts = {}) ->
-		crudMapping =
-			create:		'POST'
-			read:		'GET'
-			update:		'PUT'
-			'delete':	'DELETE'
-		opts.method = crudMapping[operation]
-		opts.url = _.result model, '$url'
-		$sailsSocket opts
-			
-	if server.type == 'io'
-		ActiveRecord.sync = ActiveRecord.iosync
-		
 	class Model extends ActiveRecord
 		constructor: (attrs = {}, opts = {parse: true}) ->
 			@$initialize(attrs, opts)
@@ -36,6 +21,22 @@ model = (ActiveRecord, $sailsSocket, server) ->
 			else
 				return new Promise (fulfill, reject) =>
 					fulfill @
+			
+		restsync: ActiveRecord.sync
+		
+		iosync: (operation, model, opts = {}) ->
+			crudMapping =
+				create:		'POST'
+				read:		'GET'
+				update:		'PUT'
+				'delete':	'DELETE'
+			opts.method = crudMapping[operation]
+			opts.url = _.result model, '$url'
+			$sailsSocket opts
+				
+		$sync: (op, model, opts) ->
+			sync = if server.type == 'io' then @iosync else @restsync
+			sync(op, model, opts)
 			
 	class Collection extends Model
 		constructor: (@models = [], opts = {}) ->

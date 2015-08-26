@@ -30261,25 +30261,6 @@ _ = require("./bower_components/underscore/underscore.js");
 
 model = function(ActiveRecord, $sailsSocket, server) {
   var Collection, Model, PageableCollection;
-  ActiveRecord.restsync = ActiveRecord.sync;
-  ActiveRecord.iosync = function(operation, model, opts) {
-    var crudMapping;
-    if (opts == null) {
-      opts = {};
-    }
-    crudMapping = {
-      create: 'POST',
-      read: 'GET',
-      update: 'PUT',
-      'delete': 'DELETE'
-    };
-    opts.method = crudMapping[operation];
-    opts.url = _.result(model, '$url');
-    return $sailsSocket(opts);
-  };
-  if (server.type === 'io') {
-    ActiveRecord.sync = ActiveRecord.iosync;
-  }
   Model = (function(superClass) {
     extend(Model, superClass);
 
@@ -30306,13 +30287,39 @@ model = function(ActiveRecord, $sailsSocket, server) {
     };
 
     Model.prototype.$save = function(values, opts) {
-      if (this.$isNew() || this.$hasChanged()) {
+      if (this.$isNew() || this.$hasChanged() || values) {
         return Model.__super__.$save.call(this, values, opts);
       } else {
-        return new Promise(function(fulfill, reject) {
-          return fulfill(this);
-        });
+        return new Promise((function(_this) {
+          return function(fulfill, reject) {
+            return fulfill(_this);
+          };
+        })(this));
       }
+    };
+
+    Model.prototype.restsync = ActiveRecord.sync;
+
+    Model.prototype.iosync = function(operation, model, opts) {
+      var crudMapping;
+      if (opts == null) {
+        opts = {};
+      }
+      crudMapping = {
+        create: 'POST',
+        read: 'GET',
+        update: 'PUT',
+        'delete': 'DELETE'
+      };
+      opts.method = crudMapping[operation];
+      opts.url = _.result(model, '$url');
+      return $sailsSocket(opts);
+    };
+
+    Model.prototype.$sync = function(op, model, opts) {
+      var sync;
+      sync = server.type === 'io' ? this.iosync : this.restsync;
+      return sync(op, model, opts);
     };
 
     return Model;
