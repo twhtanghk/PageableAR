@@ -32,19 +32,25 @@ Follow the prototype of Model, Collection, and PageableCollection defined in [ba
   </ul>
 ```
 
-To interface with socket.io (sails) server, simply override the static method pagaeble.Model.sync with the pre-defined pageableAR.Model.iosync. The default is to interface with restful Web Server by pageableAR.Model.restsync.
+To interface with socket.io (sails) server, simply override the static method pagaeble.Model.sync with the pre-defined pageableAR.Model.iosync. The default is to interface with restful Web Server by pageableAR.Model.restsync. The following module is to define the default model interface to be 'io' and Device model interface to be other restful Web Server.
 ```
 angular.module('model', ['PageableAR'])
 	.factory 'resource', (pageableAR) ->
 		pageableAR.Model.sync = pageableAR.Model.iosync
 	
+		urlRoot = (model, url, root = '/context') ->
+			if model.transport() == 'io' then "#{url}" else "#{root}#{url}"
+		
 		class RosterItem extends pageableAR.Model
 			$urlRoot: ->
-				ret = '/api/roster'
-				if @transport() == 'io'
-					ret = context + ret
-				return ret
+				urlRoot(@, '/api/roster')
 		
+		class Device extends pageableAR.Model
+			$urlRoot: ->
+				urlRoot(@, '/api/device', 'https://mob.myvnc.com/device')
+	
+			@sync: pageableAR.Model.restsync
+	
 		RosterItem: RosterItem
 		...
 ```
