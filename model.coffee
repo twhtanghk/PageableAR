@@ -22,22 +22,26 @@ model = (ActiveRecord, $sailsSocket, server) ->
 				return new Promise (fulfill, reject) =>
 					fulfill @
 			
-		restsync: ActiveRecord.sync
+		@restsync: ActiveRecord.sync
 		
-		iosync: (operation, model, opts = {}) ->
+		@iosync: (operation, model, opts = {}) ->
 			crudMapping =
 				create:		'POST'
 				read:		'GET'
 				update:		'PUT'
 				'delete':	'DELETE'
 			opts.method = crudMapping[operation]
-			opts.url = _.result model, '$url'
+			opts.url ?= _.result model, '$url'
 			$sailsSocket opts
-				
-		$sync: (op, model, opts) ->
-			sync = if server.type == 'io' then @iosync else @restsync
-			sync(op, model, opts)
 			
+		@sync: Model.restsync
+		
+		$sync: (operation, model, options) ->
+			Model.sync.apply(@, arguments)
+			
+		transport: ->
+			if Model.sync == Model.restsync then 'rest' else 'io'
+		
 	class Collection extends Model
 		constructor: (@models = [], opts = {}) ->
 			super({}, opts)
@@ -141,6 +145,4 @@ model = (ActiveRecord, $sailsSocket, server) ->
 	PageableCollection:	PageableCollection
 
 angular.module('PageableAR', ['ActiveRecord', 'sails.io'])
-	.value 'server', 
-		type: 'rest'
-	.factory 'pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]
+	.factory 'pageableAR', ['ActiveRecord', '$sailsSocket', model]

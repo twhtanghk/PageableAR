@@ -30298,9 +30298,9 @@ model = function(ActiveRecord, $sailsSocket, server) {
       }
     };
 
-    Model.prototype.restsync = ActiveRecord.sync;
+    Model.restsync = ActiveRecord.sync;
 
-    Model.prototype.iosync = function(operation, model, opts) {
+    Model.iosync = function(operation, model, opts) {
       var crudMapping;
       if (opts == null) {
         opts = {};
@@ -30312,14 +30312,24 @@ model = function(ActiveRecord, $sailsSocket, server) {
         'delete': 'DELETE'
       };
       opts.method = crudMapping[operation];
-      opts.url = _.result(model, '$url');
+      if (opts.url == null) {
+        opts.url = _.result(model, '$url');
+      }
       return $sailsSocket(opts);
     };
 
-    Model.prototype.$sync = function(op, model, opts) {
-      var sync;
-      sync = server.type === 'io' ? this.iosync : this.restsync;
-      return sync(op, model, opts);
+    Model.sync = Model.restsync;
+
+    Model.prototype.$sync = function(operation, model, options) {
+      return Model.sync.apply(this, arguments);
+    };
+
+    Model.prototype.transport = function() {
+      if (Model.sync === Model.restsync) {
+        return 'rest';
+      } else {
+        return 'io';
+      }
     };
 
     return Model;
@@ -30510,9 +30520,7 @@ model = function(ActiveRecord, $sailsSocket, server) {
   };
 };
 
-angular.module('PageableAR', ['ActiveRecord', 'sails.io']).value('server', {
-  type: 'rest'
-}).factory('pageableAR', ['ActiveRecord', '$sailsSocket', 'server', model]);
+angular.module('PageableAR', ['ActiveRecord', 'sails.io']).factory('pageableAR', ['ActiveRecord', '$sailsSocket', model]);
 
 
 
