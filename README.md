@@ -32,7 +32,7 @@ Follow the prototype of Model, Collection, and PageableCollection defined in [ba
   </ul>
 ```
 
-To interface with socket.io (sails) server, simply override the static method pagaable.Model.sync with the pre-defined pageableAR.Model.iosync. The default is to interface with restful Web Server by pageableAR.Model.restsync.
+To interface with socket.io (sails) server, simply override the static method pagaeble.Model.sync with the pre-defined pageableAR.Model.iosync. The default is to interface with restful Web Server by pageableAR.Model.restsync.
 ```
 angular.module('model', ['PageableAR'])
 	.factory 'resource', (pageableAR) ->
@@ -40,5 +40,11 @@ angular.module('model', ['PageableAR'])
 	
 		class RosterItem extends pageableAR.Model
 			$urlRoot: ->
-				if @transport() == 'io' then "/api/roster" else "#{context}/api/roster"
+				ret = '/api/roster'
+				if @transport() == 'io'
+					ret = context + ret
+				return ret
+		
+		RosterItem: RosterItem
+		...
 ```
