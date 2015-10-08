@@ -36,7 +36,7 @@ To interface with socket.io (sails) server, simply override the static method pa
 ```
 angular.module('model', ['PageableAR'])
 	.factory 'resource', (pageableAR) ->
-		pageableAR.Model.sync = pageableAR.Model.iosync
+		pageableAR.setTransport(pageableAR.Model.iosync)
 	
 		urlRoot = (model, url, root = '/context') ->
 			if model.transport() == 'io' then "#{url}" else "#{root}#{url}"

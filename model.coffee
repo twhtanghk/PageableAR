@@ -37,10 +37,10 @@ model = (ActiveRecord, $sailsSocket, server) ->
 		@sync: Model.restsync
 		
 		$sync: (operation, model, options) ->
-			Model.sync.apply(@, arguments)
+			@constructor.sync.apply(@, arguments)
 			
 		transport: ->
-			if Model.sync == Model.restsync then 'rest' else 'io'
+			if @constructor.sync == Model.restsync then 'rest' else 'io'
 		
 	class Collection extends Model
 		constructor: (@models = [], opts = {}) ->
@@ -143,6 +143,9 @@ model = (ActiveRecord, $sailsSocket, server) ->
 	Model:				Model
 	Collection:			Collection
 	PageableCollection:	PageableCollection
+	setTransport: (type = Model.restsync) ->
+		_.each [Model, Collection, PageableCollection], (resource) ->
+			resource.sync = type
 
 angular.module('PageableAR', ['ActiveRecord', 'sails.io'])
 	.factory 'pageableAR', ['ActiveRecord', '$sailsSocket', model]

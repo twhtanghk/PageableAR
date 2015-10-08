@@ -70,11 +70,11 @@ model = function(ActiveRecord, $sailsSocket, server) {
     Model.sync = Model.restsync;
 
     Model.prototype.$sync = function(operation, model, options) {
-      return Model.sync.apply(this, arguments);
+      return this.constructor.sync.apply(this, arguments);
     };
 
     Model.prototype.transport = function() {
-      if (Model.sync === Model.restsync) {
+      if (this.constructor.sync === Model.restsync) {
         return 'rest';
       } else {
         return 'io';
@@ -265,7 +265,15 @@ model = function(ActiveRecord, $sailsSocket, server) {
   return {
     Model: Model,
     Collection: Collection,
-    PageableCollection: PageableCollection
+    PageableCollection: PageableCollection,
+    setTransport: function(type) {
+      if (type == null) {
+        type = Model.restsync;
+      }
+      return _.each([Model, Collection, PageableCollection], function(resource) {
+        return resource.sync = type;
+      });
+    }
   };
 };
 
