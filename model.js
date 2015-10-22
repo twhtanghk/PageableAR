@@ -47,6 +47,15 @@ model = function(ActiveRecord, $sailsSocket, server) {
       }
     };
 
+    Model.prototype.$refetch = function(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return this.$fetch(_.defaults(opts, {
+        reset: true
+      }));
+    };
+
     Model.restsync = ActiveRecord.sync;
 
     Model.iosync = function(operation, model, opts) {
@@ -257,6 +266,23 @@ model = function(ActiveRecord, $sailsSocket, server) {
           })["catch"](reject);
         };
       })(this));
+    };
+
+    PageableCollection.prototype.$refetch = function(opts) {
+      var next, skip;
+      if (opts == null) {
+        opts = {};
+      }
+      skip = this.state.skip;
+      this.reset();
+      next = (function(_this) {
+        return function() {
+          if (_this.state.skip < skip) {
+            return _this.$fetch(opts).then(next);
+          }
+        };
+      })(this);
+      return next();
     };
 
     return PageableCollection;

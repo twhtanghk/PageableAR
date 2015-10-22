@@ -22,6 +22,10 @@ model = (ActiveRecord, $sailsSocket, server) ->
 				return new Promise (fulfill, reject) =>
 					fulfill @
 			
+		# fetch the collection to current position again
+		$refetch: (opts = {}) ->
+			@$fetch _.defaults(opts, reset: true)
+		
 		@restsync: ActiveRecord.sync
 		
 		@iosync: (operation, model, opts = {}) ->
@@ -139,6 +143,16 @@ model = (ActiveRecord, $sailsSocket, server) ->
 						else
 							reject 'Not a valid response type'
 					.catch reject
+					
+		# fetch to current position again
+		$refetch: (opts = {}) ->
+			skip = @state.skip
+			@reset()
+			next = =>
+				if @state.skip < skip
+					@$fetch(opts)
+						.then next
+			next()
 
 	Model:				Model
 	Collection:			Collection
