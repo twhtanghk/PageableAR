@@ -30372,7 +30372,7 @@ model = function(ActiveRecord, $sailsSocket, server) {
             return _this.length++;
           } else {
             model = _.find(_this.models, function(model) {
-              return model[_this.$idAttribute] === item[_this.$idAttribute];
+              return model[model.$idAttribute] === item[item.$idAttribute];
             });
             return _.extend(model, _.omit(item, '$$hashKey'));
           }
@@ -30393,7 +30393,7 @@ model = function(ActiveRecord, $sailsSocket, server) {
         return function(model) {
           return model.$destroy().then(function() {
             return _this.models = _.filter(_this.models, function(item) {
-              return item[_this.$idAttribute] !== model[_this.$idAttribute];
+              return item[item.$idAttribute] !== model[model.$idAttribute];
             });
           });
         };
@@ -30409,7 +30409,7 @@ model = function(ActiveRecord, $sailsSocket, server) {
       if (typeof model === 'object') {
         cond = (function(_this) {
           return function(a, b) {
-            return a[_this.$idAttribute] === b[_this.$idAttribute];
+            return a[a.$idAttribute] === b[b.$idAttribute];
           };
         })(this);
       }

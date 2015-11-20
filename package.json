@@ -1,6 +1,6 @@
 {
   "name": "PageableAR",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Model, Collection, and Pageable Collection for Angular Active Record",
   "main": "model.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/twhtanghk/PageableAR.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/twhtanghk/PageableAR/issues"
   },
