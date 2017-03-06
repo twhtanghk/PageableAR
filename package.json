@@ -1,6 +1,6 @@
 {
   "name": "PageableAR",
-  "version": "1.0.2",
+  "version": "0.0.2",
   "description": "Model, Collection, and Pageable Collection for Angular Active Record",
   "main": "model.js",
   "scripts": {
@@ -23,9 +23,12 @@
     "debowerify": "^1.2.0",
     "gulp": "^3.8.11",
     "gulp-coffee": "^2.3.1",
-    "gulp-sass": "^1.3.3",
+    "gulp-sass": "^3.1.0",
     "gulp-util": "^3.0.4",
     "http-server": "^0.8.0",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0"
   }
 }

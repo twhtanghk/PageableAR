@@ -1,5 +1,6 @@
 require 'angular-activerecord'
 require 'angularSails'
+Promise = require 'bluebird'
 _ = require 'underscore'
 
 model = (ActiveRecord, $sailsSocket, server) ->

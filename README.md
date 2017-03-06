@@ -7,18 +7,7 @@ bower install PageableAR
 ```
 
 ## Demo
-Compile and start http server
-```
-  npm install && bower install
-  node_modules/.bin/gulp
-  node_modules/.bin/http-server
-```
-
-Browse the testing page
-```
-  open browser to visit http://localhost:8080/test/test.html
-  scroll down to reach the page bottom and trigger next page loading
-```
+Click [here](https://rawgit.com/twhtanghk/PageableAR/master/test/test.html) for demo
 
 ## Usage
 Follow the prototype of Model, Collection, and PageableCollection defined in [backbonejs](http://backbonejs.org/)
